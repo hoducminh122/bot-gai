@@ -172,8 +172,8 @@ def show_about(message):
 ┏━━━━━━━━━━━━━━━━━━━━━━┓
 👑 <b>BOT LUXURY PRO+ v3.0</b>
 ┗━━━━━━━━━━━━━━━━━━━━━━┛
-💻 Developer: <b>@minhiosfefe</b>
-🌐 API: DucMinhIOS - VIPPRO88
+💻 Developer: <b>Zhee💢</b>
+🌐 API: Zhee - Bot Vip
 📆 Phiên bản: <b>3.0 (Polling)</b>
 ✨ Cảm ơn bạn đã sử dụng bot 🎉
 """

@@ -11,10 +11,10 @@ bot = telebot.TeleBot(TOKEN)
 # 🕒 Thời điểm bot khởi động
 start_time = datetime.now()
 
-# 📊 Bộ đếm (Đã thêm bộ đếm cho các chức năng mới)
+# 📊 Bộ đếm (Đã thêm bộ đếm cho "videorandom")
 usage_count = {
     "anhgai": 0, "anhgaisexy": 0, "videogai": 0, "regarena": 0,
-    "hentai2d": 0, "hentai3d": 0
+    "hentai2d": 0, "hentai3d": 0, "videorandom": 0
 }
 LOADING_GIF = "https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif"
 
@@ -24,7 +24,7 @@ def show_loading(chat_id, text="⏳ Đang xử lý yêu cầu..."):
     time.sleep(1.8)
     bot.delete_message(chat_id, msg.message_id)
 
-# 🏠 Menu chính (Đã thêm các nút chức năng mới)
+# 🏠 Menu chính (Đã thêm nút "Video Random")
 @bot.message_handler(commands=["start", "menu"])
 def show_menu(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -34,6 +34,7 @@ def show_menu(message):
         types.InlineKeyboardButton("🎬 Video Gái", callback_data="videogai"),
         types.InlineKeyboardButton("🎬 Video 2D", callback_data="hentai2d"),
         types.InlineKeyboardButton("🎬 Video 3D", callback_data="hentai3d"),
+        types.InlineKeyboardButton("🎬 Video Random", callback_data="videorandom"), # <--- NÚT MỚI
         types.InlineKeyboardButton("🎮 Reg Garena", callback_data="regarena"),
         types.InlineKeyboardButton("👑 About Bot", callback_data="about"),
         types.InlineKeyboardButton("⏰ Uptime Bot", callback_data="uptime"),
@@ -53,7 +54,7 @@ def show_menu(message):
         reply_markup=markup,
     )
 
-# ⚙️ Callback menu (Đã thêm xử lý cho các callback mới)
+# ⚙️ Callback menu (Đã thêm xử lý cho callback "videorandom")
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "anhgai":
@@ -79,6 +80,9 @@ def callback_query(call):
     elif call.data == "hentai3d":
         show_loading(call.message.chat.id)
         send_hentai_3d(call.message)
+    elif call.data == "videorandom": # <--- XỬ LÝ MỚI
+        show_loading(call.message.chat.id)
+        send_video_random(call.message)
     elif call.data == "current_time":
         show_current_time(call.message)
     # =========================================
@@ -199,7 +203,7 @@ def bot_uptime(message):
     bot.send_message(message.chat.id, text, parse_mode="HTML")
 
 # ===================================================================
-# CÁC CHỨC NĂNG MỚI ĐƯỢC CHUYỂN THỂ TỪ bot.py
+# CÁC CHỨC NĂNG MỚI
 # ===================================================================
 
 # 🎬 Video 2D
@@ -243,6 +247,28 @@ def send_hentai_3d(message):
             bot.reply_to(message, "❌ API không trả về video 3D.")
     except Exception as e:
         bot.reply_to(message, f"⚠️ Lỗi khi lấy video 3D: {e}")
+
+# 🎬 Video Random (CHỨC NĂNG MỚI)
+def send_video_random(message):
+    usage_count["videorandom"] += 1
+    try:
+        res = requests.get("https://web-production-12dc6.up.railway.app/api/hentai3dvanguoi", timeout=20).json()
+        video_url = res.get("url")
+
+        if video_url:
+            caption = f"""
+┏━━━━━━━━━━━━━━━━━┓
+🎥 <b>VIDEO RANDOM</b>
+┗━━━━━━━━━━━━━━━━━┛
+📊 Lượt xem: <b>{usage_count['videorandom']}</b>
+💬 Chúc bạn xem vui vẻ nhé 💕
+"""
+            bot.send_video(message.chat.id, video_url, caption=caption, parse_mode="HTML")
+        else:
+            bot.reply_to(message, "❌ API không trả về video Random.")
+    except Exception as e:
+        bot.reply_to(message, f"⚠️ Lỗi khi lấy video Random: {e}")
+
 
 # 🕒 Xem giờ Việt Nam
 def show_current_time(message):
